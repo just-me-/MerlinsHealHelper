@@ -1,0 +1,8 @@
+## Title: |c00FF00Merlin's Healer Helper|r
+## APIVersion: 100017
+## SavedVariables: MerlinsHealerHelperSavedVariables
+## Version: 0.2
+## Author: @Just_Merlin
+
+MerlinssHealerHelper.lua
+MerlinssHealerHelper.xml
