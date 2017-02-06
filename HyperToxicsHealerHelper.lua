@@ -1,11 +1,15 @@
 --
 htHealerHelper = {}
+
+-- merlins add
+htHealerHelper.replacable = false
+
 htHealerHelper.name = "HyperToxicsHealerHelper"
-htHealerHelper.version = 0.1
+htHealerHelper.version = 0.2
 htHealerHelper.unitTags = {}
 htHealerHelper.inCombat = false
 htHealerHelper.playerName = ""
-htHealerHelper.LOW_HEALTH = 0.60
+htHealerHelper.LOW_HEALTH = 0.65
 
 -- Initialize our addon
 function htHealerHelper.OnAddOnLoaded(eventCode, addOnName)
@@ -57,7 +61,7 @@ end
 
 -- Fancy loaded message
 function htHealerHelper.LateInitialize(eventCode, addOnName)
-	d("HyperToxic's Healer Helper loaded...")
+	-- d("HyperToxic's Healer Helper loaded...")
 
 	EVENT_MANAGER:UnregisterForEvent(htHealerHelper.name, EVENT_PLAYER_ACTIVATED);
 end
@@ -127,13 +131,13 @@ function htHealerHelper.UpdateIndicator()
 			if priorityUnit.InSupportRange then
 				htHealerHelperIndicatorT:SetColor(255, 0, 0, 255)
 				if htHealerHelper.playerName == priorityUnit.Name then
-					htHealerHelperIndicatorT:SetText("Heal yourself!")
+					htHealerHelperIndicatorT:SetText("Heil Dich!")
 				else
 					htHealerHelperIndicatorT:SetText("Heal " .. priorityUnit.Name .. ".")
 				end
 			else
 				htHealerHelperIndicatorT:SetColor(255, 255, 0, 255)
-				htHealerHelperIndicatorT:SetText(priorityUnit.Name .. " is out of range.")
+				htHealerHelperIndicatorT:SetText(priorityUnit.Name .. " ist ausser Reichweite.")
 			end
 		else
 			htHealerHelperIndicatorT:SetText("")
@@ -198,20 +202,32 @@ function htHealerHelper.UIModeChanged()
 		htHealerHelperIndicatorBG:SetAlpha(0)
 		htHealerHelperIndicatorT:SetText("")
 	end
+	
 end
 
 -- Hide or show the add-on when other panels are open, like inventory.
 -- There's probably a better way to hook this into the scene manager.
 function htHealerHelper.HideInterface(eventCode,layerIndex,activeLayerIndex)
-    --d(layerIndex .. ":" .. activeLayerIndex)
+    -- d(layerIndex .. ":" .. activeLayerIndex)
     -- We don't want to hide the interface if this is the user pressing the "." key, only if there's an interface displayed
-    if (activeLayerIndex == 3) then
-        htHealerHelperIndicator:SetHidden(true)
+    -- if (activeLayerIndex == 3) then
+	-- 	htHealerHelperIndicator:SetHidden(true)
+    -- end
+	-- nie einblenden... 
+	if (htHealerHelper.replacable == false) then
+		htHealerHelperIndicator:SetHidden(true)
     end
+	
 end
 
 function htHealerHelper.ShowInterface(...)
     htHealerHelperIndicator:SetHidden(false)
+	
+	
+	-- TEST menu versteckt?... immer,..= 
+	if (ZO_ReticleContainer:IsHidden() == true) then
+		htHealerHelperIndicator:SetHidden(true)
+	end
 end
 
 EVENT_MANAGER:RegisterForEvent(htHealerHelper.name, EVENT_ADD_ON_LOADED, htHealerHelper.OnAddOnLoaded);
