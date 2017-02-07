@@ -35,9 +35,6 @@ function merlinsHealHelper.CreateSettingsMenu()
 
 	local cntrlOptionsPanel = merlinsHealHelper.LAM2:RegisterAddonPanel("merlinsHealHelper_Options", panelData)
 
--- GetString(SI_EXTGL_STYLE_MODE)
---merlinsHealHelper.savedVariables.left
-
 	local optionsData = {
 		[1] = {
 			type = "description",
@@ -45,8 +42,8 @@ function merlinsHealHelper.CreateSettingsMenu()
 		},
 		[2] = {
 			type = "slider",
-			name = 'Health Alert',
-			tooltip = "Shows warning if someone's health drops below this percent.",
+			name =  GetString(LOCALES_HEALTH_ALERT),
+			tooltip = GetString(LOCALES_HEALTH_ALERT_TP),
 			min = 5,
 			max = 100,
 			step = 5,
@@ -60,8 +57,8 @@ function merlinsHealHelper.CreateSettingsMenu()
 		},
 		[3] = {
 			type = "checkbox",
-			name = 'Enable Reposition',
-			tooltip = 'Activate this to replace the alert area. ',
+			name = GetString(LOCALES_ENABLE_REPOSITION),
+			tooltip = GetString(LOCALES_ENABLE_REPOSITION_TP),
 			default = false,
 			getFunc = function() return merlinsHealHelper.savedVariables.userVISIBLE end,
 			setFunc = function(bValue)
@@ -190,13 +187,13 @@ function merlinsHealHelper.UpdateIndicator()
 			if priorityUnit.InSupportRange then
 				merlinsHealHelperIndicatorT:SetColor(255, 0, 0, 255)
 				if merlinsHealHelper.playerName == priorityUnit.Name then
-					merlinsHealHelperIndicatorT:SetText("Heil Dich!")
+					merlinsHealHelperIndicatorT:SetText(GetString(LOCALES_HEAL_YOURSELF))
 				else
-					merlinsHealHelperIndicatorT:SetText("Heal " .. priorityUnit.Name .. ".")
+					merlinsHealHelperIndicatorT:SetText(GetString(LOCALES_HEAL).." " .. priorityUnit.Name .. ".")
 				end
 			else
 				merlinsHealHelperIndicatorT:SetColor(255, 255, 0, 255)
-				merlinsHealHelperIndicatorT:SetText(priorityUnit.Name .. " ist ausser Reichweite.")
+				merlinsHealHelperIndicatorT:SetText(priorityUnit.Name .. " "..GetString(LOCALES_OUT_OF_RANGE))
 			end
 		else
 			merlinsHealHelperIndicatorT:SetText("")
@@ -278,7 +275,7 @@ function merlinsHealHelper.UIModeChanged()
 
 	if (IsReticleHidden()) then
 		merlinsHealHelperIndicatorBG:SetAlpha(100)
-		merlinsHealHelperIndicatorT:SetText("Heal Helper")
+		merlinsHealHelperIndicatorT:SetText("Merlin's Heal Helper")
 	else
 		merlinsHealHelperIndicatorBG:SetAlpha(0)
 		merlinsHealHelperIndicatorT:SetText("")

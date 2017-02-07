@@ -21,5 +21,8 @@ lib\LibAddonMenu-2.0\controls\header.lua
 lib\LibAddonMenu-2.0\controls\slider.lua
 lib\LibAddonMenu-2.0\controls\texture.lua
 
+lang/en.lua
+lang/$(language).lua
+
 MerlinsHealHelper.lua
 MerlinsHealHelper.xml
