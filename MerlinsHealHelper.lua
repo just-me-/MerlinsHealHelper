@@ -1,11 +1,10 @@
---
 merlinsHealHelper = {}
 
--- merlins add
 merlinsHealHelper.replacable = false
+merlinsHealHelper.LAM2 = LibStub("LibAddonMenu-2.0")
 
-merlinsHealHelper.name = "MerlinsHealerHelper"
-merlinsHealHelper.version = 0.2
+merlinsHealHelper.name = "MerlinsHealHelper"
+merlinsHealHelper.version = "1.0.1"
 merlinsHealHelper.unitTags = {}
 merlinsHealHelper.inCombat = false
 merlinsHealHelper.playerName = ""
@@ -15,7 +14,69 @@ merlinsHealHelper.LOW_HEALTH = 0.65
 function merlinsHealHelper.OnAddOnLoaded(eventCode, addOnName)
 	if (addOnName == merlinsHealHelper.name) then
 		merlinsHealHelper:Initialize()
+		merlinsHealHelper:CreateSettingsMenu()
 	end
+end
+
+
+function merlinsHealHelper.CreateSettingsMenu()
+	local colorYellow = "|cFFFF22"
+
+	local panelData = {
+		type = "panel",
+		name = "Merlins Heal Helper",
+		displayName = colorYellow.."Merlin's|r Heal Helper",
+		author = "@Just_Merlin",
+		version = merlinsHealHelper.version,
+		slashCommand = "/merlinsHealHelper",
+		registerForRefresh = true,
+		registerForDefaults = true,
+	}
+
+	local cntrlOptionsPanel = merlinsHealHelper.LAM2:RegisterAddonPanel("merlinsHealHelper_Options", panelData)
+
+-- GetString(SI_EXTGL_STYLE_MODE)
+--merlinsHealHelper.savedVariables.left
+
+	local optionsData = {
+		[1] = {
+			type = "description",
+			text = colorYellow.."Merlin's|r Rez Helper",
+		},
+		[2] = {
+			type = "slider",
+			name = 'Health Alert',
+			tooltip = "Shows warning if someone's health drops below this percent.",
+			min = 5,
+			max = 100,
+			step = 5,
+			default = 65,
+			getFunc = function() return merlinsHealHelper.savedVariables.userLOW_HEALTH end,
+			setFunc = function(iValue)
+									PlaySound(SOUNDS.VOICE_CHAT_MENU_CHANNEL_JOINED)
+									merlinsHealHelper.savedVariables.userLOW_HEALTH = iValue
+									merlinsHealHelper.CheckLOW_HEALTH(false)
+								end,
+		},
+		[3] = {
+			type = "checkbox",
+			name = 'Enable Reposition',
+			tooltip = 'Activate this to replace the alert area. ',
+			default = false,
+			getFunc = function() return merlinsHealHelper.savedVariables.userVISIBLE end,
+			setFunc = function(bValue)
+									PlaySound(SOUNDS.VOICE_CHAT_MENU_CHANNEL_JOINED)
+									merlinsHealHelper.savedVariables.userVISIBLE = bValue
+									merlinsHealHelper.ShowInterface()
+								end
+		},
+	}
+
+	merlinsHealHelper.LAM2:RegisterOptionControls("merlinsHealHelper_Options", optionsData)
+end
+
+local function OnPluginLoaded(event, addon)
+
 end
 
 
@@ -32,20 +93,21 @@ function merlinsHealHelper:Initialize()
 	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_POWER_UPDATE, merlinsHealHelper.OnPowerUpdate);
 
 
-	--self.savedVariables = ZO_SavedVars:New("MerlinHealerHelperSavedVariables", 1, nil, {})
-	self.savedVariables = ZO_SavedVars:NewAccountWide("MerlinHealerHelperSavedVariables", 1, nil, {})
+	--self.savedVariables = ZO_SavedVars:New("MerlinsHealHelperSavedVariables", 1, nil, {})
+	self.savedVariables = ZO_SavedVars:NewAccountWide("MerlinsHealHelperSavedVariables", 1, nil, {})
 
 	self:RestorePosition()
+	self:CheckLOW_HEALTH(true)
 
-    merlinsHealHelperIndicatorBG:SetAlpha(0)
+  merlinsHealHelperIndicatorBG:SetAlpha(0)
 
 	merlinsHealHelperIndicator:SetWidth( 600 )
 	merlinsHealHelperIndicator:SetHeight( 50 )
 
-    merlinsHealHelperIndicatorT:ClearAnchors();
-    merlinsHealHelperIndicatorT:SetAnchor(CENTER, merlinsHealHelperIndicator, CENTER, 0, 0)
+  merlinsHealHelperIndicatorT:ClearAnchors();
+  merlinsHealHelperIndicatorT:SetAnchor(CENTER, merlinsHealHelperIndicator, CENTER, 0, 0)
 
-    merlinsHealHelperIndicatorT:SetWidth( 600 )
+  merlinsHealHelperIndicatorT:SetWidth( 600 )
 	merlinsHealHelperIndicatorT:SetHeight( 50 )
 	merlinsHealHelperIndicatorT:SetHorizontalAlignment(1)
 
@@ -54,14 +116,14 @@ function merlinsHealHelper:Initialize()
 	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, merlinsHealHelper.LateInitialize);
 	EVENT_MANAGER:UnregisterForEvent(self.name, EVENT_ADD_ON_LOADED);
 
-    EVENT_MANAGER:RegisterForEvent(self.name,  EVENT_ACTION_LAYER_POPPED , merlinsHealHelper.ShowInterface)
-    EVENT_MANAGER:RegisterForEvent(self.name,  EVENT_ACTION_LAYER_PUSHED , merlinsHealHelper.HideInterface)
+  EVENT_MANAGER:RegisterForEvent(self.name,  EVENT_ACTION_LAYER_POPPED , merlinsHealHelper.ShowInterface)
+  EVENT_MANAGER:RegisterForEvent(self.name,  EVENT_ACTION_LAYER_PUSHED , merlinsHealHelper.HideInterface)
 
 end
 
 -- Fancy loaded message
 function merlinsHealHelper.LateInitialize(eventCode, addOnName)
-	-- d("Merlin's Healer Helper loaded...")
+	 --d("Merlin's Heal Helper loaded...")
 
 	EVENT_MANAGER:UnregisterForEvent(merlinsHealHelper.name, EVENT_PLAYER_ACTIVATED);
 end
@@ -94,9 +156,6 @@ function merlinsHealHelper.UpdateIndicator()
 	--unit.UnitTag = unitTag
 
 	local priorityUnit = nil;
-
-
-
 
 	if merlinsHealHelper.inCombat then
 
@@ -178,9 +237,31 @@ function merlinsHealHelper.UpdateVolatileUnitInfo(unitTag)
 end
 
 
-function merlinsHealHelper.OnIndicatorMoveStop()
-	merlinsHealHelper.savedVariables.left = merlinsHealHelperIndicator:GetLeft()
-	merlinsHealHelper.savedVariables.top = merlinsHealHelperIndicator:GetTop()
+function merlinsHealHelper:CheckLOW_HEALTH(isSelf)
+	local userValue = 0;
+
+	if isSelf then
+		userValue = self.savedVariables.userLOW_HEALTH
+	else
+		userValue = merlinsHealHelper.savedVariables.userLOW_HEALTH
+	end
+
+	if (userValue and userValue > 5) then
+		if isSelf then
+			self.LOW_HEALTH = (userValue/100)
+		else
+			merlinsHealHelper.LOW_HEALTH = (userValue/100)
+		end
+
+	end
+end
+
+function merlinsHealHelper:RestorePosition()
+	local left = self.savedVariables.left
+	local top = self.savedVariables.top
+
+	merlinsHealHelperIndicator:ClearAnchors()
+	merlinsHealHelperIndicator:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
 end
 
 function merlinsHealHelper:RestorePosition()
@@ -197,7 +278,7 @@ function merlinsHealHelper.UIModeChanged()
 
 	if (IsReticleHidden()) then
 		merlinsHealHelperIndicatorBG:SetAlpha(100)
-		merlinsHealHelperIndicatorT:SetText("Healer Helper")
+		merlinsHealHelperIndicatorT:SetText("Heal Helper")
 	else
 		merlinsHealHelperIndicatorBG:SetAlpha(0)
 		merlinsHealHelperIndicatorT:SetText("")
@@ -214,9 +295,9 @@ function merlinsHealHelper.HideInterface(eventCode,layerIndex,activeLayerIndex)
 	-- 	merlinsHealHelperIndicator:SetHidden(true)
     -- end
 	-- nie einblenden...
-	if (merlinsHealHelper.replacable == false) then
+	if (merlinsHealHelper.savedVariables.userVISIBLE ~= true) then
 		merlinsHealHelperIndicator:SetHidden(true)
-    end
+  end
 
 end
 
@@ -224,8 +305,7 @@ function merlinsHealHelper.ShowInterface(...)
     merlinsHealHelperIndicator:SetHidden(false)
 
 
-	-- TEST menu versteckt?... immer,..=
-	if (ZO_ReticleContainer:IsHidden() == true) then
+	if (ZO_ReticleContainer:IsHidden() == true and merlinsHealHelper.savedVariables.userVISIBLE ~= true) then
 		merlinsHealHelperIndicator:SetHidden(true)
 	end
 end
