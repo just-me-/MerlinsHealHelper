@@ -189,7 +189,7 @@ function merlinsHealHelper.UpdateIndicator()
 				if merlinsHealHelper.playerName == priorityUnit.Name then
 					merlinsHealHelperIndicatorT:SetText(GetString(LOCALES_HEAL_YOURSELF))
 				else
-					merlinsHealHelperIndicatorT:SetText(GetString(LOCALES_HEAL).." " .. priorityUnit.Name .. ".")
+					merlinsHealHelperIndicatorT:SetText(GetString(LOCALES_HEAL).." " .. priorityUnit.Name .. "!")
 				end
 			else
 				merlinsHealHelperIndicatorT:SetColor(255, 255, 0, 255)
