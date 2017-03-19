@@ -253,12 +253,9 @@ function merlinsHealHelper:CheckLOW_HEALTH(isSelf)
 	end
 end
 
-function merlinsHealHelper:RestorePosition()
-	local left = self.savedVariables.left
-	local top = self.savedVariables.top
-
-	merlinsHealHelperIndicator:ClearAnchors()
-	merlinsHealHelperIndicator:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left, top)
+function merlinsHealHelper.OnIndicatorMoveStop()
+	merlinsHealHelper.savedVariables.left = merlinsHealHelperIndicator:GetLeft()
+	merlinsHealHelper.savedVariables.top = merlinsHealHelperIndicator:GetTop()
 end
 
 function merlinsHealHelper:RestorePosition()
