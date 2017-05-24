@@ -1,7 +1,7 @@
 ## Title: |c00FF00Merlin's Heal Helper|r
-## APIVersion: 100018
+## APIVersion: 100019
 ## SavedVariables: MerlinsHealHelperSavedVariables
-## Version: 1.0.2
+## Version: 1.0.3
 ## Author: @Just_Merlin
 ## Description: Shows an alert it group members health drops under a specified percent.
 ## OptionalDependsOn: LibAddonMenu-2.0

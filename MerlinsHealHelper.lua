@@ -4,7 +4,7 @@ merlinsHealHelper.replacable = false
 merlinsHealHelper.LAM2 = LibStub("LibAddonMenu-2.0")
 
 merlinsHealHelper.name = "MerlinsHealHelper"
-merlinsHealHelper.version = "1.0.1"
+merlinsHealHelper.version = "1.0.3"
 merlinsHealHelper.unitTags = {}
 merlinsHealHelper.inCombat = false
 merlinsHealHelper.playerName = ""
@@ -38,7 +38,7 @@ function merlinsHealHelper.CreateSettingsMenu()
 	local optionsData = {
 		[1] = {
 			type = "description",
-			text = colorYellow.."Merlin's|r Rez Helper",
+			text = colorYellow.."Merlin's|r Heal Helper",
 		},
 		[2] = {
 			type = "slider",
