@@ -143,7 +143,7 @@ function merlinsHealHelper.UpdateIndicator()
 	local priorityUnit = nil;
 	if merlinsHealHelper.inCombat then
 		for i, unit in pairs(merlinsHealHelper.unitTags) do
-			if unit.Online and (not unit.Dead) and unit.LowHealth then
+			if unit.Online and (not unit.Dead) and unit.LowHealth and (unit.InSupportRange or not merlinsHealHelper.ignorePlayersOutOfRange) then
 				if not priorityUnit then
 					priorityUnit = unit
 				else
@@ -221,9 +221,9 @@ end
 
 function merlinsHealHelper:SetIgoreOption(isSelf)
 	if isSelf then
-		self.ignorePlayersOutOfRange = self.savedVariables.userLOW_HEALTH
+		self.ignorePlayersOutOfRange = self.savedVariables.ignorePlayersOutOfRange
 	else
-		merlinsHealHelper.ignorePlayersOutOfRange = merlinsHealHelper.savedVariables.userLOW_HEALTH
+		merlinsHealHelper.ignorePlayersOutOfRange = merlinsHealHelper.savedVariables.ignorePlayersOutOfRange
 	end
 end
 
