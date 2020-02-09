@@ -118,12 +118,10 @@ function merlinsHealHelper:Initialize()
 	EVENT_MANAGER:RegisterForEvent(self.name,  EVENT_ACTION_LAYER_PUSHED , merlinsHealHelper.HideInterface)
 end
 
--- Fancy loaded message
 function merlinsHealHelper.LateInitialize(eventCode, addOnName)
 	 --d("Merlin's Heal Helper loaded...")
 	EVENT_MANAGER:UnregisterForEvent(merlinsHealHelper.name, EVENT_PLAYER_ACTIVATED);
 end
-
 
 function merlinsHealHelper.OnPlayerCombatState(event, inCombat)
 	-- The ~= operator is "not equal to" in Lua.
@@ -145,6 +143,7 @@ function merlinsHealHelper.UpdateIndicator()
 	local priorityUnit = nil;
 	local outOfRangeUnit = nil;
 	if merlinsHealHelper.inCombat then
+	d("Started")
 		for i, unit in pairs(merlinsHealHelper.unitTags) do
 			if unit.Online and (not unit.Dead) and unit.LowHealth then
 				if unit.InSupportRange then
@@ -166,10 +165,18 @@ function merlinsHealHelper.UpdateIndicator()
 				end
 			end
 		end
+		if priorityUnit then
+			d("prio"..priorityUnit.Name)
+		end 
+		if outOfRangeUnit then
+			d("range"..outOfRangeUnit.Name)
+		end 
 		
 		-- should have out of range units equal priority? 
-		if merlinsHealHelper.ignorePlayersOutOfRange and outOfRangeUnit.HealthPercent < priorityUnit.HealthPercent then
-			priorityUnit = outOfRangeUnit
+		if not merlinsHealHelper.ignorePlayersOutOfRange and outOfRangeUnit then
+			if not priorityUnit or outOfRangeUnit.HealthPercent < priorityUnit.HealthPercentthen then
+				priorityUnit = outOfRangeUnit
+			end
 		end
 
 		if priorityUnit then
@@ -178,11 +185,11 @@ function merlinsHealHelper.UpdateIndicator()
 				if merlinsHealHelper.playerName == priorityUnit.Name then
 					merlinsHealHelperIndicatorT:SetText(GetString(LOCALES_HEAL_YOURSELF))
 				else
-					merlinsHealHelperIndicatorT:SetText(GetString(LOCALES_HEAL).." " .. priorityUnit.Name .. "!")
+					merlinsHealHelperIndicatorT:SetText(GetString(LOCALES_HEAL).." "..priorityUnit.Name.."!")
 				end
 			else
 				merlinsHealHelperIndicatorT:SetColor(255, 255, 0, 255)
-				merlinsHealHelperIndicatorT:SetText(priorityUnit.Name .. " "..GetString(LOCALES_OUT_OF_RANGE))
+				merlinsHealHelperIndicatorT:SetText(priorityUnit.Name.." "..GetString(LOCALES_OUT_OF_RANGE))
 			end
 		else
 			merlinsHealHelperIndicatorT:SetText("")
