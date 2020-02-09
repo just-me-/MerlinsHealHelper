@@ -141,41 +141,16 @@ end
 
 function merlinsHealHelper.UpdateIndicator()
 	local priorityUnit = nil;
-	local outOfRangeUnit = nil;
 	if merlinsHealHelper.inCombat then
-	d("Started")
 		for i, unit in pairs(merlinsHealHelper.unitTags) do
 			if unit.Online and (not unit.Dead) and unit.LowHealth then
-				if unit.InSupportRange then
-					if not priorityUnit then
-						priorityUnit = unit
-					else
-						if unit.HealthPercent < priorityUnit.HealthPercent then
-							priorityUnit = unit
-						end
-					end
+				if not priorityUnit then
+					priorityUnit = unit
 				else
-					if not outOfRangeUnit then
-						outOfRangeUnit = unit
-					else
-						if unit.HealthPercent < outOfRangeUnit.HealthPercent then
-							outOfRangeUnit = unit
-						end
+					if unit.HealthPercent < priorityUnit.HealthPercent then
+						priorityUnit = unit
 					end
 				end
-			end
-		end
-		if priorityUnit then
-			d("prio"..priorityUnit.Name)
-		end 
-		if outOfRangeUnit then
-			d("range"..outOfRangeUnit.Name)
-		end 
-		
-		-- should have out of range units equal priority? 
-		if not merlinsHealHelper.ignorePlayersOutOfRange and outOfRangeUnit then
-			if not priorityUnit or outOfRangeUnit.HealthPercent < priorityUnit.HealthPercentthen then
-				priorityUnit = outOfRangeUnit
 			end
 		end
 
@@ -188,8 +163,12 @@ function merlinsHealHelper.UpdateIndicator()
 					merlinsHealHelperIndicatorT:SetText(GetString(LOCALES_HEAL).." "..priorityUnit.Name.."!")
 				end
 			else
-				merlinsHealHelperIndicatorT:SetColor(255, 255, 0, 255)
-				merlinsHealHelperIndicatorT:SetText(priorityUnit.Name.." "..GetString(LOCALES_OUT_OF_RANGE))
+				if not merlinsHealHelper.ignorePlayersOutOfRange then
+					merlinsHealHelperIndicatorT:SetColor(255, 255, 0, 255)
+					merlinsHealHelperIndicatorT:SetText(priorityUnit.Name.." "..GetString(LOCALES_OUT_OF_RANGE))
+				else
+					merlinsHealHelperIndicatorT:SetText("")
+				end
 			end
 		else
 			merlinsHealHelperIndicatorT:SetText("")
