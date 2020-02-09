@@ -9,6 +9,7 @@ merlinsHealHelper.unitTags = {}
 merlinsHealHelper.inCombat = false
 merlinsHealHelper.playerName = ""
 merlinsHealHelper.LOW_HEALTH = 0.65
+merlinsHealHelper.ignorePlayersOutOfRange = false
 
 -- Initialize our addon
 function merlinsHealHelper.OnAddOnLoaded(eventCode, addOnName)
@@ -53,6 +54,18 @@ function merlinsHealHelper.CreateSettingsMenu()
 		},
 		[3] = {
 			type = "checkbox",
+			name = GetString(LOCALES_IGNORE_OoR),
+			tooltip = GetString(LOCALES_IGNORE_OoR_TP),
+			default = false,
+			getFunc = function() return merlinsHealHelper.savedVariables.ignorePlayersOutOfRange end,
+			setFunc = function(bValue)
+									PlaySound(SOUNDS.VOICE_CHAT_MENU_CHANNEL_JOINED)
+									merlinsHealHelper.savedVariables.ignorePlayersOutOfRange = bValue
+									merlinsHealHelper.SetIgoreOption(false)
+								end
+		},
+		[4] = {
+			type = "checkbox",
 			name = GetString(LOCALES_ENABLE_REPOSITION),
 			tooltip = GetString(LOCALES_ENABLE_REPOSITION_TP),
 			default = false,
@@ -83,6 +96,7 @@ function merlinsHealHelper:Initialize()
 	self.savedVariables = ZO_SavedVars:NewAccountWide("MerlinsHealHelperSavedVariables", 1, nil, {})
 	self:RestorePosition()
 	self:CheckLOW_HEALTH(true)
+	self:SetIgoreOption(true)
 
 	merlinsHealHelperIndicatorBG:SetAlpha(0)
 	merlinsHealHelperIndicator:SetWidth(600)
@@ -154,7 +168,7 @@ function merlinsHealHelper.UpdateIndicator()
 		end
 		
 		-- should have out of range units equal priority? 
-		if TBDTBDTBDTBD and outOfRangeUnit.HealthPercent < priorityUnit.HealthPercent then
+		if merlinsHealHelper.ignorePlayersOutOfRange and outOfRangeUnit.HealthPercent < priorityUnit.HealthPercent then
 			priorityUnit = outOfRangeUnit
 		end
 
@@ -216,6 +230,14 @@ function merlinsHealHelper:CheckLOW_HEALTH(isSelf)
 		else
 			merlinsHealHelper.LOW_HEALTH = (userValue/100)
 		end
+	end
+end
+
+function merlinsHealHelper:SetIgoreOption(isSelf)
+	if isSelf then
+		self.ignorePlayersOutOfRange = self.savedVariables.userLOW_HEALTH
+	else
+		merlinsHealHelper.ignorePlayersOutOfRange = merlinsHealHelper.savedVariables.userLOW_HEALTH
 	end
 end
 
