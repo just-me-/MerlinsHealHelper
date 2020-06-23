@@ -73,7 +73,11 @@ function merlinsHealHelper.CreateSettingsMenu()
 			setFunc = function(bValue)
 									PlaySound(SOUNDS.VOICE_CHAT_MENU_CHANNEL_JOINED)
 									merlinsHealHelper.savedVariables.userVISIBLE = bValue
-									merlinsHealHelper.ShowInterface()
+									if(bValue == true) then 
+										merlinsHealHelperIndicator:SetHidden(false)
+									else
+										merlinsHealHelperIndicator:SetHidden(true)
+									end
 								end
 		},
 	}
@@ -113,9 +117,7 @@ function merlinsHealHelper:Initialize()
 	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, merlinsHealHelper.LateInitialize)
 	
 	EVENT_MANAGER:UnregisterForEvent(self.name, EVENT_ADD_ON_LOADED)
-	
-	EVENT_MANAGER:RegisterForEvent(self.name,  EVENT_ACTION_LAYER_POPPED , merlinsHealHelper.ShowInterface)
-	EVENT_MANAGER:RegisterForEvent(self.name,  EVENT_ACTION_LAYER_PUSHED , merlinsHealHelper.HideInterface)
+	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_RETICLE_HIDDEN_UPDATE, merlinsHealHelper.ReticleStateChanced)
 end
 
 function merlinsHealHelper.LateInitialize(eventCode, addOnName)
@@ -250,19 +252,12 @@ function merlinsHealHelper.UIModeChanged()
 	end
 end
 
--- Hide or show the add-on when other panels are open, like inventory.
--- There's probably a better way to hook this into the screne manager.
-function merlinsHealHelper.HideInterface(eventCode,layerIndex,activeLayerIndex)
-	if (merlinsHealHelper.savedVariables.userVISIBLE ~= true) then
-		merlinsHealHelperIndicator:SetHidden(true)
-	end
-end
-
-function merlinsHealHelper.ShowInterface(...)
-    merlinsHealHelperIndicator:SetHidden(false)
-	if (ZO_ReticleContainer:IsHidden() == true and merlinsHealHelper.savedVariables.userVISIBLE ~= true) then
-		merlinsHealHelperIndicator:SetHidden(true)
-	end
+function merlinsHealHelper.ReticleStateChanced(eventCode,hidden)
+	if (hidden and merlinsHealHelper.savedVariables.userVISIBLE ~= true) then
+	   merlinsHealHelperIndicator:SetHidden(true)
+   else
+	   merlinsHealHelperIndicator:SetHidden(false)
+   end
 end
 
 EVENT_MANAGER:RegisterForEvent(merlinsHealHelper.name, EVENT_ADD_ON_LOADED, merlinsHealHelper.OnAddOnLoaded);
