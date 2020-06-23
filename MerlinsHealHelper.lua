@@ -4,7 +4,7 @@ merlinsHealHelper.replacable = false
 merlinsHealHelper.LAM2 = LibStub("LibAddonMenu-2.0")
 
 merlinsHealHelper.name = "MerlinsHealHelper"
-merlinsHealHelper.version = "1.1.0"
+merlinsHealHelper.version = "1.2.0"
 merlinsHealHelper.unitTags = {}
 merlinsHealHelper.inCombat = false
 merlinsHealHelper.playerName = ""
